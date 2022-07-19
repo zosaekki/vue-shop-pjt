@@ -58,11 +58,11 @@
             </div>
 
             <div class="col-auto" v-if="cate2 !== ''">
-              <select class="form-select" v-model="selectedCateId">
-                <option :value="cate.id" :key="cate.id" v-for="cate in categoryObj[cate1][cate2]">{{ cate.value }}</option>
+              <select class="form-select" v-model="product.category_id">
+                <option :value="cate.id" :key="cate.id" v-for="cate in categoryObj[cate1][cate2]">{{ cate.value }}
+                </option>
               </select>
             </div>
-            {{  selectedCateId }}
           </div>
         </div>
       </div>
@@ -108,14 +108,12 @@ export default {
         add_delivery_price: 0,
         tags: '',
         outbound_days: 0,
-        category_id: 1,
+        category_id: '',
         seller_id: 1
       },
       categoryObj: {},
       cate1: '',
       cate2: '',
-      cate3: '',
-      selectedCateId: '',
     };
   },
   created() {
@@ -147,33 +145,50 @@ export default {
     },
     changeCate1() {
       this.cate2 = '';
-      this.cate3 = '';
-      this.selectedCateId = '';
+      this.product.category_id = '';
     },
     changeCate2() {
-      this.cate3 = '';
-      this.selectedCateId = '';
+      this.product.category_id = '';
     },
     productInsert() {
-      if(this.product.product_name.trim() === '') {
+      if (this.product.product_name.trim() === '') {
         this.$refs.product_name.focus();
         return this.$swal('제품명은 필수 입력값입니다.');
       }
 
-      if(this.product.product_price === '' || this.product.product_price === 0) {
+      if (this.product.product_price === '' || this.product.product_price === 0) {
         this.$refs.product_price.focus();
         return this.$swal('제품가격을 입력하세요.');
       }
 
-      if(this.product.delivery_price === '' || this.product.delivery_price === 0) {
+      if (this.product.delivery_price === '' || this.product.delivery_price === 0) {
         this.$refs.delivery_price.focus();
         return this.$swal('배송료를 입력하세요.');
       }
 
-      if(this.product.outbound_days === '' || this.product.outbound_days === 0) {
+      if (this.product.outbound_days === '' || this.product.outbound_days === 0) {
         this.$refs.outbound_days.focus();
         return this.$swal('출고일을 입력하세요.');
       }
+
+      if (this.product.category_id === '') {
+        return this.$swal('카테고리를 선택해주세요.');
+      }
+
+      this.$swal.fire({
+        title: '정말 등록 하시겠습니까?',
+        showCancelButton: true, 
+        confirmButtonText: '등록',
+        cancelButtonText: '취소'
+      }).then(async result => {
+        if(result.isConfirmed) {
+          const res = this.$post('/api/productInsert', this.product);
+          console.log(res);
+          this.$swal.fire('저장되었습니다.', '', 'success');
+          this.$router.push( {path: '/sales'} );
+        }
+      });
+      ;
     }
   }
 }
