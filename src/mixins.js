@@ -11,10 +11,18 @@ export default {
                 console.error(e);
             })).data;
         },
-
-        async $get(url, param) {
+        async $get(url, param) { // 쿼리스트링으로 날아감
             return (await axios.get(url, {
                 params: param
+            }).catch(e => {
+                console.error(e);
+            })).data;
+        },
+        async $delete(url, param) {
+            return (await axios({
+                method: 'delete',
+                url,
+                data: param
             }).catch(e => {
                 console.error(e);
             })).data;
